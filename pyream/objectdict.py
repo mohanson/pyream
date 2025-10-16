@@ -2,11 +2,14 @@ import typing
 
 
 class ObjectDict(dict):
-    # A dictionary that allows attribute-style access.
-
     def __getattr__(self, name: str) -> typing.Any:
         try:
-            return self[name]
+            value = self[name]
+            if type(value) == dict:
+                value = ObjectDict(value)
+                self[name] = value
+                return value
+            return value
         except KeyError:
             raise AttributeError(name)
 
